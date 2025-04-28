@@ -1,0 +1,95 @@
+# app.py
+
+from flask import Flask, render_template, request, redirect, url_for
+from models.accountbook import AccountBook
+from services.save_load_service import save_accountbook, load_accountbook
+from services.calculation_service import print_summary
+
+app = Flask(__name__)
+
+# 전역 가계부 객체
+accountbook = AccountBook()
+load_accountbook(accountbook)  # 시작할 때 저장된 데이터 불러오기
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/set-initial-funds', methods=['GET', 'POST'])
+def set_initial_funds():
+    if request.method == 'POST':
+        cash = int(request.form['cash'])
+        bank = int(request.form['bank'])
+        accountbook.set_initial_funds(cash, bank)
+        save_accountbook(accountbook)
+        return redirect(url_for('index'))
+    return render_template('set_initial_funds.html')
+
+@app.route('/add-income', methods=['GET', 'POST'])
+def add_income():
+    if request.method == 'POST':
+        date = request.form['date']
+        source = request.form['source']
+        amount = int(request.form['amount'])
+        memo = request.form['memo']
+        accountbook.add_income(date, source, amount, memo)
+        save_accountbook(accountbook)
+        return redirect(url_for('index'))
+    return render_template('add_income.html')
+
+@app.route('/add-expense', methods=['GET', 'POST'])
+def add_expense():
+    if request.method == 'POST':
+        date = request.form['date']
+        category = request.form['category']
+        amount = int(request.form['amount'])
+        memo = request.form['memo']
+        accountbook.add_expense(date, category, amount, memo)
+        save_accountbook(accountbook)
+        return redirect(url_for('index'))
+    return render_template('add_expense.html')
+
+@app.route('/add-expected-expense', methods=['GET', 'POST'])
+def add_expected_expense():
+    if request.method == 'POST':
+        date = request.form['date']
+        category = request.form['category']
+        amount = int(request.form['amount'])
+        memo = request.form['memo']
+        accountbook.add_expected_expense(date, category, amount, memo)
+        save_accountbook(accountbook)
+        return redirect(url_for('index'))
+    return render_template('add_expected_expense.html')
+
+@app.route('/withdraw', methods=['GET', 'POST'])
+def withdraw():
+    if request.method == 'POST':
+        date = request.form['date']
+        amount = int(request.form['amount'])
+        memo = request.form['memo']
+        accountbook.withdraw_from_bank(date, amount, memo)
+        save_accountbook(accountbook)
+        return redirect(url_for('index'))
+    return render_template('withdraw.html')
+
+@app.route('/balance')
+def balance():
+    balance = accountbook.calculate_balance()
+    return render_template('balance.html', balance=balance)
+
+@app.route('/summary')
+def summary():
+    total_expenses = sum(expense.amount for expense in accountbook.expenses)
+    total_incomes = sum(income.amount for income in accountbook.incomes)
+    total_withdrawals = sum(withdrawal.amount for withdrawal in accountbook.withdrawals)
+    expected_expenses = sum(expense.amount for expense in accountbook.expected_expenses)
+    balance = accountbook.calculate_balance()
+    return render_template('summary.html', 
+                           total_expenses=total_expenses,
+                           total_incomes=total_incomes,
+                           total_withdrawals=total_withdrawals,
+                           expected_expenses=expected_expenses,
+                           balance=balance)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000, debug=True)

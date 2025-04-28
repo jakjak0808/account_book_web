@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>구매계획 수정</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; }
+    input, textarea { width: 100%; margin-bottom: 1rem; padding: 0.8rem; font-size: 1rem; }
+    button { padding: 0.8rem 1.2rem; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .small-button { background: #2196F3; margin-bottom: 1rem; }
+  </style>
+  <script>
+    function addStoreField() {
+      const container = document.getElementById('additional-stores');
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <input type="text" name="extra_store_name[]" placeholder="매장 이름" required>
+        <input type="text" name="extra_store_price[]" placeholder="매장 가격" required>
+      `;
+      container.appendChild(div);
+    }
+  </script>
+</head>
+<body>
+
+<h1>🛒 구매계획 수정</h1>
+
+<form action="/update_purchase_plan" method="POST">
+  <input type="hidden" name="index" value="{{ index }}">
+
+  <label>품명:</label>
+  <input type="text" name="product" value="{{ plan.product }}" required>
+
+  <label>구매 목적:</label>
+  <textarea name="purpose" rows="3" required>{{ plan.purpose }}</textarea>
+
+  <label>온라인 가격:</label>
+  <input type="text" name="online_price" value="{{ plan.online_price }}">
+
+  <!-- ✅ A마트 이름 + 가격 수정 가능 -->
+  <label>A마트 이름:</label>
+  <input type="text" name="amart_name" value="{{ plan.amart_name if plan.amart_name else 'A마트' }}">
+
+  <label>A마트 가격:</label>
+  <input type="text" name="amart_price" value="{{ plan.amart_price }}">
+
+  <!-- ✅ B마트 이름 + 가격 수정 가능 -->
+  <label>B마트 이름:</label>
+  <input type="text" name="bmart_name" value="{{ plan.bmart_name if plan.bmart_name else 'B마트' }}">
+
+  <label>B마트 가격:</label>
+  <input type="text" name="bmart_price" value="{{ plan.bmart_price }}">
+
+  <!-- 기타 가격 -->
+  <label>기타 가격:</label>
+  <input type="text" name="other_price" value="{{ plan.other_price }}">
+
+  <!-- 추가 매장 입력란 -->
+  <div id="additional-stores">
+    <!-- 버튼으로 추가 -->
+  </div>
+
+  <button type="button" class="small-button" onclick="addStoreField()">➕ 다른 매장 추가</button>
+
+  <button type="submit">수정 완료</button>
+</form>
+
+<br>
+<a href="/purchase_list">⬅️ 목록으로 돌아가기</a>
+
+</body>
+</html>

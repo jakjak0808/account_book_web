@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 나의 가계부 통계</title>
+
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#4CAF50">
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/static/service-worker.js')
+          .then(function(registration) {
+            console.log('✅ Service Worker 등록 성공:', registration.scope);
+          })
+          .catch(function(error) {
+            console.error('❌ Service Worker 등록 실패:', error);
+          });
+      });
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      padding-bottom: 80px; /* 하단 네비 여백 확보 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background: #4CAF50;
+      color: white;
+      padding: 1.5rem 1rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    main {
+      width: 100%;
+      max-width: 900px;
+      padding: 2rem 1rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>📊 나의 가계부 통계</header>
+
+<main>
+  <div class="card">
+    <div class="card-title">월별 수입 및 지출 통계</div>
+    <canvas id="statsChart"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-title">종류별 수입</div>
+    <canvas id="incomeTypeChart"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-title">종류별 지출</div>
+    <canvas id="expenseTypeChart"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-title">이번달 일별 수입 및 지출</div>
+    <canvas id="dailyStatsChart"></canvas>
+  </div>
+</main>
+
+<script>
+const months = {{ months|tojson }};
+const income_data = {{ income_data|tojson }};
+const expense_data = {{ expense_data|tojson }};
+const income_types = {{ income_types|tojson }};
+const income_type_data = {{ income_type_data|tojson }};
+const expense_types = {{ expense_types|tojson }};
+const expense_type_data = {{ expense_type_data|tojson }};
+const days = {{ days|tojson }};
+const daily_income_data = {{ daily_income_data|tojson }};
+const daily_expense_data = {{ daily_expense_data|tojson }};
+
+// 차트 코드 (네가 쓰던 그대로 유지)
+new Chart(document.getElementById('statsChart'), {
+  type: 'bar',
+  data: {
+    labels: months,
+    datasets: [
+      {
+        label: '수입',
+        data: income_data,
+        backgroundColor: 'rgba(54, 162, 235, 0.7)'
+      },
+      {
+        label: '지출',
+        data: expense_data,
+        backgroundColor: 'rgba(255, 99, 132, 0.7)'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: '월별 수입과 지출 (바트)'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return value.toLocaleString() + ' 바트';
+          }
+        }
+      }
+    }
+  }
+});
+
+// 종류별 수입
+new Chart(document.getElementById('incomeTypeChart'), {
+  type: 'bar',
+  data: {
+    labels: income_types,
+    datasets: [{
+      label: '종류별 수입',
+      data: income_type_data,
+      backgroundColor: 'rgba(54, 162, 235, 0.7)'
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: '종류별 수입 (바트)'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return value.toLocaleString() + ' 바트';
+          }
+        }
+      }
+    }
+  }
+});
+
+// 종류별 지출
+new Chart(document.getElementById('expenseTypeChart'), {
+  type: 'bar',
+  data: {
+    labels: expense_types,
+    datasets: [{
+      label: '종류별 지출',
+      data: expense_type_data,
+      backgroundColor: 'rgba(255, 99, 132, 0.7)'
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: '종류별 지출 (바트)'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return value.toLocaleString() + ' 바트';
+          }
+        }
+      }
+    }
+  }
+});
+
+// 이번달 일별 수입/지출
+new Chart(document.getElementById('dailyStatsChart'), {
+  type: 'line',
+  data: {
+    labels: days,
+    datasets: [
+      {
+        label: '일별 수입',
+        data: daily_income_data,
+        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        fill: true,
+        tension: 0.3
+      },
+      {
+        label: '일별 지출',
+        data: daily_expense_data,
+        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        fill: true,
+        tension: 0.3
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: '이번달 일별 수입과 지출 (바트)'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return value.toLocaleString() + ' 바트';
+          }
+        }
+      }
+    }
+  }
+});
+</script>
+
+{% include 'partials/bottom_nav.html' %}
+
+</body>
+</html>

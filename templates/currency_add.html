@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>다른 화폐 추가</title>
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 1rem;
+      text-align: center;
+    }
+    .form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: 2rem auto;
+    }
+    input, button {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      margin-top: 2rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="form-container">
+  <h1>다른 화폐 추가하기 🌎</h1>
+
+  <form action="/currency_save" method="post">
+    <input type="text" name="name" placeholder="화폐명 예: USD, JPY" required>
+    <input type="text" name="symbol" placeholder="화폐기호 예: $, ¥" required>
+    <input type="number" name="amount" placeholder="금액 예: 1000" required>
+    <button type="submit">저장하기</button>
+  </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📋 구매계획 목록</title>
+
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#4CAF50">
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/static/service-worker.js')
+          .then(function(registration) {
+            console.log('✅ Service Worker 등록 성공:', registration.scope);
+          })
+          .catch(function(error) {
+            console.error('❌ Service Worker 등록 실패:', error);
+          });
+      });
+    }
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      padding-bottom: 80px; /* 하단 네비 여백 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background: #4CAF50;
+      color: white;
+      padding: 1.5rem 1rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    main {
+      width: 100%;
+      max-width: 900px;
+      padding: 2rem 1rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .plan-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+
+    .plan-card p {
+      margin: 0.5rem 0;
+      font-size: 1.05rem;
+      color: #333;
+      word-break: keep-all;
+    }
+
+    .plan-card form {
+      display: inline-block;
+      margin-top: 1rem;
+    }
+
+    .plan-card button {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      background-color: #4CAF50;
+      color: white;
+      transition: background-color 0.3s;
+    }
+
+    .plan-card button:hover {
+      background-color: #388E3C;
+    }
+
+    .no-data {
+      margin-top: 3rem;
+      color: #888;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  📋 구매계획 목록
+</header>
+
+<main>
+  {% if plans %}
+    {% for plan in plans %}
+      <div class="plan-card">
+        <p><strong>품명:</strong> {{ plan.product }}</p>
+        <p><strong>구매목적:</strong> {{ plan.purpose }}</p>
+        <p><strong>온라인가격:</strong> {{ plan.online_price }} 바트</p>
+        <p><strong>{{ plan.amart_name }} 가격:</strong> {{ plan.amart_price }}바트</p>
+
+        <!-- ✅ B마트 대신 plan.bmart_name 표시 -->
+        <p><strong>{{ plan.bmart_name }} 가격:</strong> {{ plan.bmart_price }} 바트</p>
+      
+        <p><strong>기타 오프라인:</strong> {{ plan.other_price }} 원</p>
+        <p><strong>구매상태:</strong> {{ plan.status if plan.status else "대기" }}</p>
+
+        <form action="/edit_purchase_plan/{{ loop.index0 }}" method="get">
+          <button type="submit">✏️ 수정</button>
+        </form>
+        <form action="/delete_purchase_plan/{{ loop.index0 }}" method="post" onsubmit="return confirm('정말 삭제할까요?');">
+          <button type="submit">🗑️ 삭제</button>
+        </form>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="no-data">❌ 저장된 구매계획이 없습니다.</p>
+  {% endif %}
+</main>
+
+{% include 'partials/bottom_nav.html' %}
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>검색 결과</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 1rem;
+    }
+    header {
+      background: #4CAF50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      margin-top: 1rem;
+    }
+    .card {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    a {
+      display: inline-block;
+      margin-top: 1rem;
+      text-decoration: none;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🔍 검색 결과</h1>
+  <p>검색어: "{{ keyword }}"</p>
+</header>
+
+<main>
+  {% if results %}
+    {% for item in results %}
+      <div class="card">
+        <p><strong>제목:</strong> {{ item.title }}</p>
+        <p><strong>금액:</strong> {{ item.amount }} 바트</p>
+        <p><strong>유형:</strong> {{ item.type }}</p>
+        <p><strong>날짜:</strong> {{ item.date }}</p>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>검색 결과가 없습니다.</p>
+  {% endif %}
+
+  <a href="/index">⬅️ 메인으로 돌아가기</a>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#fff">
+  <title>로딩 중...</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: none;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+     
+      background-size: cover;
+      background-attachment: fixed;
+      z-index: -1;
+    }
+
+    .percentage {
+      font-size: 3rem;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+
+    .progress-container {
+      width: 80%;
+      background: rgba(255, 255, 255, 0.3);
+      height: 8px;
+      border-radius: 5px;
+      margin-top: 1.5rem;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #4CAF50;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .loading-text {
+      margin-top: 1rem;
+      font-size: 1.5rem;
+      color: #000;
+      font-weight: bold;
+      animation: fadeIn 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+  </style>
+
+  <script>
+    let percent = 0;
+    let loadingText;
+    let progressBar;
+
+    document.addEventListener("DOMContentLoaded", function() {
+      loadingText = document.getElementById('percentage');
+      progressBar = document.getElementById('progress-bar');
+
+      const interval = setInterval(function() {
+        if (percent >= 100) {
+          clearInterval(interval);
+          setTimeout(function() {
+            window.location.href = "/auth";
+          }, 300);
+        } else {
+          percent++;
+          loadingText.textContent = percent + '%';
+          progressBar.style.width = percent + '%';
+        }
+      }, 30); // 0 → 100까지 3초동안 자연스럽게 올라감
+    });
+  </script>
+
+</head>
+
+<body>
+<div class="loading-text">개인 가계부</div>
+<div class="percentage" id="percentage">0%</div>
+<div class="progress-container">
+  <div class="progress-bar" id="progress-bar"></div>
+</div>
+<div class="loading-text">로딩 중...</div>
+
+</body>
+</html>

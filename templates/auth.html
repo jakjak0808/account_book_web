@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fff">
+  <title>인증번호 입력</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Arial', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      z-index: 1;
+    }
+    .auth-box {
+      position: relative;
+      z-index: 2;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      transition: all 0.3s ease;
+    }
+    input {
+      width: 92%;
+      padding: 0.8rem;
+      margin-top: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 1rem;
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #388E3C;
+    }
+    .error {
+      color: red;
+      margin-top: 0.5rem;
+    }
+    .welcome-message {
+      display: none;
+      font-size: 1.8rem;
+      color: #4CAF50;
+      animation: fadeIn 1s ease forwards;
+      text-align: center;
+      z-index: 2;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    #loading-bar {
+      width: 0;
+      height: 5px;
+      background: #4CAF50;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: width 1s ease;
+      z-index: 999;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="loading-bar"></div>
+<div class="overlay"></div>
+
+<div class="auth-box" id="auth-box">
+  <h1>인증번호 입력</h1>
+  <form method="POST" action="/auth">
+    <input type="password" name="code" placeholder="인증번호 입력" required>
+    <button type="submit" onclick="startLoading()">확인</button>
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+  </form>
+</div>
+
+<div class="welcome-message" id="welcome-message">
+  🎉 환영합니다!
+</div>
+
+<script>
+  function startLoading() {
+    document.getElementById('loading-bar').style.width = '100%';
+  }
+
+  {% if error %}
+  if (window.navigator.vibrate) {
+    window.navigator.vibrate(200);
+  }
+  {% endif %}
+
+  {% if session.get('authenticated') %}
+    document.getElementById('auth-box').style.display = 'none';
+    document.getElementById('welcome-message').style.display = 'block';
+    setTimeout(function() {
+      window.location.href = "{{ session.get('next_page', '/index') }}";
+    }, 2000);
+  {% endif %}
+</script>
+
+</body>
+</html>

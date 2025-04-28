@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>구매계획 수정 ✏️</title>
+
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#4CAF50">
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/static/service-worker.js')
+          .then(function(registration) {
+            console.log('✅ Service Worker 등록 성공:', registration.scope);
+          })
+          .catch(function(error) {
+            console.error('❌ Service Worker 등록 실패:', error);
+          });
+      });
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 2rem 1rem 70px 1rem;
+      text-align: center;
+    }
+    header {
+      background: #4CAF50;
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    form {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    label, select, button {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+    select, button {
+      padding: 0.8rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 2rem;
+    }
+    button:hover {
+      background-color: #388E3C;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>구매계획 수정 ✏️</h1>
+</header>
+
+<main>
+  <form action="/edit_purchase_plan/{{ plan_id }}" method="post">
+    <p><strong>품명:</strong> {{ plan.product }}</p>
+    <p><strong>구매목적:</strong> {{ plan.purpose }}</p>
+
+    <label for="status">구매 상태 변경</label>
+    <select name="status" id="status" required>
+      <option value="대기" {% if plan.status == '대기' or not plan.status %}selected{% endif %}>대기</option>
+      <option value="완료" {% if plan.status == '완료' %}selected{% endif %}>완료</option>
+    </select>
+
+    <button type="submit">✅ 저장하기</button>
+  </form>
+</main>
+{% include 'partials/bottom_nav.html' %}
+</body>
+</html>

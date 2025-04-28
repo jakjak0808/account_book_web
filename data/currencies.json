@@ -1,0 +1,37 @@
+[
+    {
+        "name": "JPY",
+        "symbol": "￥",
+        "amount": "1000"
+    },
+    {
+        "name": "LAK",
+        "symbol": "₭",
+        "amount": "411000"
+    },
+    {
+        "name": "MYR",
+        "symbol": "RM",
+        "amount": "63"
+    },
+    {
+        "name": "HKD",
+        "symbol": "HK$",
+        "amount": "80"
+    },
+    {
+        "name": "CNY",
+        "symbol": "￥",
+        "amount": "1"
+    },
+    {
+        "name": "VND",
+        "symbol": "VND",
+        "amount": "42000"
+    },
+    {
+        "name": "KRW",
+        "symbol": "₩",
+        "amount": "51000"
+    }
+]

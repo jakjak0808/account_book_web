@@ -1,0 +1,131 @@
+<nav class="bottom-nav">
+    <a href="/" class="{% if active_page == 'home' %}active{% endif %}">
+      <i>🏠</i>
+      <span>홈</span>
+    </a>
+    <a href="/add" class="{% if active_page == 'add' %}active{% endif %}">
+      <i>➕</i>
+      <span>기록 추가</span>
+    </a>
+    <a href="/stats" class="{% if active_page == 'stats' %}active{% endif %}">
+      <i>📈</i>
+      <span>통계</span>
+    </a>
+  
+    <!-- 구매계획 토글 버튼 -->
+    <div class="purchase-toggle">
+      <button type="button" id="purchase-btn">
+        <i>🛒</i>
+        <span>구매계획</span>
+      </button>
+      <div id="purchase-menu" class="menu">
+        <a href="/purchase_plan">➕ 추가</a>
+        <a href="/purchase_list">📋 보기</a>
+      </div>
+    </div>
+  </nav>
+  
+  <style>
+    /* 하단 네비 */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 65px;
+      background: #f9f9f9;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+      z-index: 1000;
+    }
+  
+    .bottom-nav a, .bottom-nav button {
+      background: none;
+      border: none;
+      outline: none;
+      text-decoration: none;
+      color: #666;
+      font-size: 0.75rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+  
+    .bottom-nav a:hover, .bottom-nav button:hover {
+      color: #4CAF50;
+    }
+  
+    .bottom-nav .active {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+  
+    /* 구매계획 토글 */
+    .purchase-toggle {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    #purchase-menu.menu {
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      padding: 0.7rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      min-width: 140px;
+      z-index: 999;
+    }
+  
+    #purchase-menu.menu.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0px);
+      pointer-events: auto;
+    }
+  
+    #purchase-menu.menu a {
+      font-size: 0.95rem;
+      color: #333;
+      text-align: center;
+      transition: color 0.2s;
+    }
+  
+    #purchase-menu.menu a:hover {
+      color: #4CAF50;
+    }
+  </style>
+  
+  <script>
+    const purchaseBtn = document.getElementById('purchase-btn');
+    const purchaseMenu = document.getElementById('purchase-menu');
+  
+    purchaseBtn.addEventListener('click', function(event) {
+      event.stopPropagation();
+      purchaseMenu.classList.toggle('show');
+    });
+  
+    document.addEventListener('click', function(event) {
+      if (!purchaseBtn.contains(event.target) && !purchaseMenu.contains(event.target)) {
+        purchaseMenu.classList.remove('show');
+      }
+    });
+  </script>

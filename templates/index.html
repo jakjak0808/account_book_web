@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>개인 가계부 📒</title>
+  <meta name="theme-color" content="#4CAF50">
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0 0 70px 0;
+    }
+    header {
+      background: #4CAF50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+    header p {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+    main {
+      padding: 1.5rem 1rem;
+    }
+    .card {
+      background: white;
+      padding: 2rem 1.5rem;
+      margin: 1rem auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      max-width: 480px;
+    }
+    .card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+    .card p {
+      font-size: 1rem;
+      margin: 0.5rem 0;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 6px;
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      width: 100%;
+      max-width: 300px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>나의 가계부 📒</h1>
+        <p>오늘도 똑똑한 소비를!</p>
+      
+        <!-- 🔥 여기 바로 검색창 넣기 -->
+        <form action="/search" method="get" style="margin-top: 1rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; padding: 0 1rem;">
+            <input type="text" name="keyword" placeholder="검색어를 입력하세요" 
+                   style="flex: 1; min-width: 0; height: 44px; padding: 0 0.8rem; font-size: 1rem; border-radius: 6px; border: none; box-sizing: border-box; max-width: 400px;">
+            <button type="submit" 
+                    style="height: 44px; padding: 0 1rem; background-color: white; color: #4CAF50; border: 2px solid #4CAF50; border-radius: 6px; font-size: 1rem; cursor: pointer; width: 100px; box-sizing: border-box;margin-top:0;">
+              검색
+            </button>
+          </form>
+      </header>
+
+<main>
+    <!-- 남은 자금 카드 -->
+    <div class="card">
+      <h2>💰 남은 자금</h2>
+      <p>현재 자금: <strong style="color:#4CAF50">{{ "{:,}".format(balance) }} 바트</strong></p>
+      <p>오늘 수익 합계: <strong style="color:blue">{{ "{:,}".format(today_income) }} 바트</strong></p>
+      <p>오늘 지출 합계: <strong style="color:red">{{ "{:,}".format(today_expense) }} 바트</strong></p>
+      <p>이번 달 수익: <strong style="color:blue">{{ "{:,}".format(month_income) }} 바트</strong></p>
+      <p>이번 달 지출: <strong style="color:red">{{ "{:,}".format(month_expense) }} 바트</strong></p>
+      <p><strong>{{ compare_text }}</strong></p>
+      <p><strong>{{ month_compare_text }}</strong></p>
+  
+      <form action="/add" method="get">
+        <button>기록 추가하기 ➡️</button>
+      </form>
+    </div>
+   
+  
+    <!-- 다른 화폐 카드 -->
+    <div class="card">
+      <h2>🌍 다른 화폐 보기</h2>
+  
+      {% if currencies %}
+        {% for currency in currencies %}
+          <p>
+            {{ currency.name }}: <strong>{{ currency.symbol }} {{ currency.amount }}</strong><br>
+            ➔ {{ currency.amount_thb }} 바트 (THB 기준)
+          </p>
+        {% endfor %}
+      {% else %}
+        <p>등록된 다른 화폐가 없습니다.</p>
+      {% endif %}
+  
+      <form action="/currency_add" method="get">
+        <button>다른 화폐 추가 ➡️</button>
+      </form>
+    </div>
+  </main>
+  {% include 'partials/bottom_nav.html' %}
+{% include 'partials/bottom_nav.html' %}
+</body>
+</html>
