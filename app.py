@@ -34,7 +34,7 @@ def loading():
 def auth():
     if request.method == 'POST':
         code = request.form.get('code')
-        if code == '1234':
+        if code == '0620':
             session['authenticated'] = True
             next_page = session.pop('next_page', '/index')
             return redirect(next_page)
