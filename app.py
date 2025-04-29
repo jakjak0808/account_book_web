@@ -41,6 +41,88 @@ def auth():
         else:
             return render_template('auth.html', error='인증번호가 틀렸습니다.')
     return render_template('auth.html')
+# 기록 추가 페이지
+@app.route('/add', methods=['GET', 'POST'])
+def add_record():
+    if request.method == 'POST':
+        # 폼에서 받은 데이터 처리
+        title = request.form['title']
+        amount = request.form['amount']
+        entry_type = request.form['type']
+        
+        # 현재 날짜 자동 설정 (서버에서 처리)
+        date = datetime.today().strftime('%Y-%m-%d')  # 현재 날짜를 자동으로 설정
+
+        # 데이터 파일에 저장하는 로직
+        new_record = {
+            'title': title,
+            'amount': float(amount),
+            'type': entry_type,
+            'date': date  # 현재 날짜 저장
+        }
+
+        # 기존 기록 불러오기
+        records = []
+        if os.path.exists(DATA_FILE):
+            with open(DATA_FILE, 'r') as f:
+                records = json.load(f)
+
+        records.append(new_record)
+
+        # 기록을 data.json 파일에 저장
+        with open(DATA_FILE, 'w') as f:
+            json.dump(records, f, ensure_ascii=False, indent=2)
+
+        return redirect('/index')  # 메인 페이지로 리디렉션
+
+    return render_template('add.html')  # GET 요청 시 add.html 폼을 보여줌
+# 기록 저장
+@app.route('/save', methods=['POST'])
+def save_record():
+    # 폼에서 데이터를 받아옵니다. 값이 없을 경우 빈 문자열을 반환
+    date = request.form.get('date', '').strip()
+
+    # date가 비어있다면 현재 날짜를 자동으로 설정
+    if not date:
+        date = datetime.today().strftime('%Y-%m-%d')  # 오늘 날짜로 설정
+
+    entry_type = request.form.get('type', '').strip()
+    amount = request.form.get('amount', '').strip()
+    title = request.form.get('title', '').strip()
+
+    # 데이터가 유효한지 확인
+    if not date or not entry_type or not amount or not title:
+        print(f"Received data: date={date}, entry_type={entry_type}, amount={amount}, title={title}")  # 디버깅
+        return "모든 필드를 채워주세요!", 400  # 필수 항목이 빠졌으면 오류 반환
+
+    try:
+        amount = float(amount)  # 금액은 숫자로 변환
+    except ValueError:
+        return "금액이 잘못되었습니다.", 400  # 금액이 잘못된 형식일 경우 오류 반환
+
+    # 새 기록 추가
+    new_record = {
+        'date': date,
+        'type': entry_type,
+        'amount': amount,
+        'title': title
+    }
+
+    # 기존 기록 불러오기
+    records = []
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'r') as f:
+            records = json.load(f)
+
+    # 새 기록 추가
+    records.append(new_record)
+
+    # 기록을 파일에 저장
+    with open(DATA_FILE, 'w') as f:
+        json.dump(records, f, ensure_ascii=False, indent=2)
+
+    # 기록을 저장한 후 메인 페이지로 리디렉션
+    return redirect('/index')
 
 @app.route('/index')
 def index():
@@ -68,22 +150,24 @@ def index():
             entry_type = entry.get('type')
             amount = entry.get('amount', 0)
 
-            if entry_type == '수입':
-                balance += amount
-            elif entry_type == '지출':
-                balance -= amount
-
-            if entry_date == today:
+            # entry_date가 None이 아니거나 빈 문자열이 아닌지 확인
+            if entry_date:
                 if entry_type == '수입':
-                    today_income += amount
+                    balance += amount
                 elif entry_type == '지출':
-                    today_expense += amount
+                    balance -= amount
 
-            if entry_date.startswith(month):
-                if entry_type == '수입':
-                    month_income += amount
-                elif entry_type == '지출':
-                    month_expense += amount
+                if entry_date == today:
+                    if entry_type == '수입':
+                        today_income += amount
+                    elif entry_type == '지출':
+                        today_expense += amount
+
+                if entry_date.startswith(month):
+                    if entry_type == '수입':
+                        month_income += amount
+                    elif entry_type == '지출':
+                        month_expense += amount
 
         if today_income or today_expense:
             compare_text = "오늘은 수입보다 지출이 많습니다." if today_expense > today_income else "오늘은 지출보다 수입이 많습니다."
